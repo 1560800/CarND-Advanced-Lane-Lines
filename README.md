@@ -56,22 +56,17 @@ An undistorted (left) and combined binary (right) image<br/><br/>
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
 I used the `cv2.warpPerspective()` for perspective transform.
-This resulted in the following source and destination points:
-src
-([[150, 720],
-  [590, 450],
-  [700, 450],
-  [1250, 720]]) 
- dst
-([[200 , 720],
-  [200  ,  0],
-  [980 ,   0], 
-  [980 , 720]])
- 
-<div style="text-align:center"><br/>
-<img src="./output_images/warped/trapezoid.png"><br/>
-a trapezoid made by the value of `ratio`<br/><br/>
-</div>
+This resulted in the following source and destination points:  
+src  
+([[150, 720],  
+  [590, 450],  
+  [700, 450],  
+  [1250, 720]])   
+ dst  
+([[200 , 720],  
+  [200  ,  0],  
+  [980 ,   0],   
+  [980 , 720]])  
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
@@ -82,25 +77,21 @@ A combined binary (left) and warped (right) image<br/><br/>
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-First, sums up all values of pixels in the bottom quarter of the picture vertically, and smooths the result using `np.convolve()` with a `window` array that all the elements are 1 like `[1,1, ... ,1]` to find the start points of both left and right lane lines.
-
-The two points which have the highest value in left half (0-639) and right (640-1279) after smoothing would be the start centroid points of left and right lane lines respectively. Howevert, I had to aware the offset of the detected points produced by `np.convolve()`, which is half length of the `window` array. These two detected lane line start points need to be subtracted by `len(window) / 2`.
+To detect the pixels that correspond to the lane lines the histogram is used as as a basis. The peaks in an histogram of the binary image in birds view represent the position of the lanes, as shown in the following example:
 
 <div style="text-align:center"><br/>
 <img src="./output_images/boundary/boundary.png"><br/>
 Sums up vertically and sooths the result<br/><br/>
 </div>
 
-After find the start points, do teh same thing repeatedly (8 times vertically) within the range +/- `margin`, which is 40 in this project, horizontally. Then masks around these centroid points (the total comes to 8x2 points because of left line plus right line) with a rectangular, and extract lane line pixels within the window rectangulars to aply polynomial fitting.
-
-I did these processed using functions called `window_mask()`, `find_window_centroids()`, `Border()` in the 7th code cell (In[7]:) of `P4.ipynb`. The result is:
+The find_lanes_sliding_windows() function implements a slinding windows approach in which the histogram is used in each window to detect the lane lines. The detection of the lane lines is based on a second order polynomial by using the np.polyfit() function. T
 
 <div style="text-align:center"><br/>
 <img src="./output_images/boundary/boundary4.png"><br/>
 A combined binary (left) and warped (right) image<br/><br/>
 </div>
 
-If the detected lane line pixels are not enough, the centroid point will be previous one like this (the left lane line):
+As previously mentioned, the find_lanes_sliding_windows() function implements the lane lines detection by using an sliding window approach. However, once we have the estimation of both lane lines for a given frame, it is possible to exploit the fact that the estimation is similar between consecutive frames in a video. This enables the implementation of a more effecient lane estimation approach, which focuses of a narrow area around the lane lines detected in previous frames to avoid performing the sliding window approach for every frame from scratch. The find_lanes_previous_fit() function implements the lane line detection using previous polynomial estimations. As example of this is shown in the following image:
 
 <div style="text-align:center"><br/>
 <img src="./output_images/boundary/boundary6.png"><br/>
@@ -111,17 +102,12 @@ Although, the polynomial fitting works well because the fitting is based on the 
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-The left and right curvature are calculated in `Border()` function using `ym_per_pix` = 30/720 [m/pixel], and I took the average between left and right radius of curvature In the 8th code cell (In[8]:) of `P4.ipynb`.
+The left and right curvature are calculated using `ym_per_pix` = 30/720 [m/pixel].
+I approximated from the polynomials of the lanes using the following formula.  
 
-```python
-left_curverad = ((1 + (2*left_fit_cr[0]*(boundary.shape[0]*ym_per_pix) + left_fit_cr[1])**2)**1.5) \
-                  / np.absolute(2*left_fit_cr[0]) #[m]
-right_curverad = ((1 + (2*right_fit_cr[0]*(boundary.shape[0]*ym_per_pix) + right_fit_cr[1])**2)**1.5) \
-                  / np.absolute(2*right_fit_cr[0]) #[m]
-
-curverad_array = (left_curverad_array+right_curverad_array) / 2.0 #[m]
-
-```
+<div style="text-align:center"><br/>
+<img src="./output_images/boundary/Curvature approximation.png"><br/>
+</div>
 
 Also, I multiply the offset pixel between the center of both lane lines and the center of the picture by `xm_per_pix` = 3.7/700 [m/pixel] to calculate the vehicle position. A minus value means that the vehicle is on left from the center of the road, and a plus value means that the vehicle is on right.
 
