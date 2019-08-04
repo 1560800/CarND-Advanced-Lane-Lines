@@ -162,20 +162,20 @@ If the around search area is incorrect, the number of detected pixels is less th
 
 2. Add a system to switch the line search process to around search to improve processing speed and prevent erroneous line detection
 ```python
-    #Switching for searchig code
-    if Easy_search is False: #Use Sliding_window_searching
-        left_fit, right_fit, leftx, lefty, rightx, righty, out_img = find_sliding_window(warped_binary)
-      ･･･
-    else: #Use previous polynomials area _searching
-        left_fit = List_left_fit[-1] 
-        right_fit = List_right_fit[-1] 
-        left_fit, right_fit, leftx, lefty, rightx, righty, colored_binary_img = search_around_poly(warped_binary,left_fit, right_fit)     
+#Switching for searchig code
+if Easy_search is False: #Use Sliding_window_searching
+    left_fit, right_fit, leftx, lefty, rightx, righty, out_img = find_sliding_window(warped_binary)
+  ･･･
+else: #Use previous polynomials area _searching
+    left_fit = List_left_fit[-1] 
+    right_fit = List_right_fit[-1] 
+    left_fit, right_fit, leftx, lefty, rightx, righty, colored_binary_img = search_around_poly(warped_binary,left_fit, right_fit)     
 ```  
 
-3. Set the following criteria to detect the line correctly
-・ Change of lane width is within ± 20%
-・ Change amount of vehicle center position is 0.3m or less
-・ The amount of change in curvature of the curve is less than twice each of the left and right lines
+3. Set the following criteria to detect the line correctly  
+・ Change of lane width is within ± 20%  
+・ Change amount of vehicle center position is 0.3m or less  
+・ The amount of change in curvature of the curve is less than twice each of the left and right lines  
 ```python  
 #Use the previous line if the line width change rate is 0.8 times or more    
 if Lane_width < 0.8*pvs_avg_Lane_width or Lane_width is 0:
@@ -202,13 +202,14 @@ if abs(offset - prv_offset) > 0.3:
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-1.This program assumes that there is no vehicle in front of the vehicle. Having a vehicle (or a bus, Truck, bike) can obscure part of the lane and cause problems with detection.
-
+1.Lanes hidden by obstacles  　
+This program assumes that there is no vehicle in front of the vehicle. Having a vehicle (or a bus, Truck, bike) can obscure part of the lane and cause problems with detection.
 One solution is to detect the vehicle (using computer vision, machine learning etc) and implement the function of subtracting the detected car position from the area for finding lane lines.
 
-2.Other problem will cause when the curvature of the lane lines is too sharp. The interested area (masked area) for seeking lane lines in this project is fixed, not dynamic.
+2.Loss of vanishing point    
+Other problem will cause when the curvature of the lane lines is too sharp. The interested area (masked area) for seeking lane lines in this project is fixed, not dynamic.
 
-To avoid this, either change the region of interest (mask region) according to the situation around the vehicle, or a human driver turns his head and looks at the direction of rotation, You can install the camera. (Everyone is just looking forward with a perfectly fixed head and can not turn sharp curves.)
+To avoid this, either change the region of interest (mask region) according to the situation around the vehicle, or a human driver turns his head and looks at the direction of rotation, You can install the camera. (Everyone is just looking forward with a perfectly fixed head and can not turn sharp curves.)  
 
-By predicting the vanishing point with deep learning and combining the lane search program of this program, it is considered that measures against 1.2 above can be taken.
+By predicting the vanishing point with deep learning and combining the lane search program of this program, it is considered that measures against 1.2 above can be taken.  
 
