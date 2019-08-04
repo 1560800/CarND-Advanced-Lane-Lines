@@ -110,7 +110,7 @@ The left and right curvature are calculated using `ym_per_pix` = 30/720 [m/pixel
 I approximated from the polynomials of the lanes using the following formula.  
 
 <div style="text-align:center"><br/>
-<img src="./output_images/boundary/Curvature approximation.png"><br/>
+<img src="./output_images/Curvature approximation.png"><br/>
 </div>
 
 Also, I multiply the offset pixel between the center of both lane lines and the center of the picture by `xm_per_pix` = 3.7/700 [m/pixel] to calculate the vehicle position. A minus value means that the vehicle is on left from the center of the road, and a plus value means that the vehicle is on right.
@@ -137,7 +137,7 @@ Original image (left) and warped (right) image<br/><br/>
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result (./output_videos/project_video_output.mp4)](./output_videos/project_video_output.mp4)
+Here's a [link to my video result (./output_videos/project_output.mp4)](./output_videos/project_output.mp4)
 
 To apply my pipeline to a video, I created a class named `Line()` to track lane line information such as *detected successfully or not*, *the first centroid points*, *recent N frames and average fitted pixels*, *recent N frames and average fitted coefficients*, *curvature*, and *vehicle position* in the 11th code cell (In[75]:) of `P4.ipynb`.
 
