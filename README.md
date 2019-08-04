@@ -1,6 +1,25 @@
-## Advanced Lane Finding
+# Self-Driving Car Engineer Nanodegree
+
+## Project : Advanced Lane Finding
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 ![Lanes Image](./examples/example_output.jpg)
+1. Flow of processing  
+  1.1 Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.  
+  1.2 Apply a distortion correction to raw images.  
+  1.3 Use color transforms, gradients, etc., to create a thresholded binary image.  
+  1.4 Apply a perspective transform to rectify binary image ("birds-eye view").  
+  1.5 Detect lane pixels and fit to find the lane boundary.  
+  1.6 Determine the curvature of the lane and vehicle position with respect to center.  
+  1.7 Warp the detected lane boundaries back onto the original image.  
+  1.8 Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.  
+
+2. Especially examined points  
+  2.1 Length weight addition  
+  2.2 Set slope criteria
+
+3. Conclusion
+
+
 
 In this project, your goal is to write a software pipeline to identify the lane boundaries in a video, but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.  
 
