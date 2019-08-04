@@ -126,74 +126,89 @@ Finally, fills the space between two fitted lines, and un-warps (warps back) the
 
 <div style="text-align:center"><br/>
 <img src="./output_images/unwarped4.png"><br/>
-Original image (left) and warped (right) image<br/><br/>
+Original image (left) and un-warped (right) image<br/><br/>
 </div>
-
-
 ---
 
 ### Pipeline (video)
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result (./output_videos/project_output.mp4)](./output_videos/project_output.mp4)
+Here's a link to my video result [(./output_videos/project_output.mp4)](./output_videos/project_output.mp4)
 
-To apply my pipeline to a video, I created a class named `Line()` to track lane line information such as *detected successfully or not*, *the first centroid points*, *recent N frames and average fitted pixels*, *recent N frames and average fitted coefficients*, *curvature*, and *vehicle position* in the 11th code cell (In[75]:) of `P4.ipynb`.
-
-Moreover, I overwrote some functions, `find_window_centroids()`, `Border()`, `Unwarp()`, in the 10th code cell (In[74]:) of `P4.ipynb` to take advantages from the `Line()` class object.
-
-If the width between detected lane lines is within +/- 0.3[m] from 3.7[m] (which is standard width of lines) and the difference between current **2nd** order coefficient and past N frames (5 frames in this project) average is less than 0.001, the detected lines would be recognized as good one and its information would be stored into the class instance. If the detection fails, the function just uses previous information stored in the `Line()` class instance (which means don't store the current detected information into the class instance). This sanity checking is implemented in the `Border()` function.
-
+I devised the following three points to apply to the video.
+1. Perform averaging between N = 35 frames to smooth.
 ```python
-# If line_obj.avg_fit is not set yet,
-if ((line_obj.avg_fit==0).all() == True):
-    ''' STORE THE DETECTED INFORMATION INTO THE CLASS '''
-
-# If line_obj.avg_fit is set already & the width between detected lines is 3.4[m] ~ 4.0[m],
-elif (abs((right_fitx[img_size[1]-1]-left_fitx[img_size[1]-1])*xm_per_pix - 3.7) <= 0.3):
-    line_obj.updateDetected(True)
-
-    # If the difference of 2nd-order coefficient is enough small,
-    if (abs(np.sum(line_obj.avg_fit[0]-current_fit[0])) <= 1.0e-3):
-        ''' STORE THE DETECTED INFORMATION INTO THE CLASS '''
-
-else:
-    line_obj.updateDetected(False)
-
-```
-
-When the previous detection works well, the `find_window_centroids()` seeks the next lane line only around previous lane line.  If the detection fails N frames (5 frames in this project) in a row, the function seeks the lane lines from scratch.
-
+    N = 35 # flame number for calculate average
+    if len(List_left_fit) < N or len(List_right_fit) < N :
+        List_left_fit.append(left_fit)
+        List_right_fit.append(right_fit)   
+    else:
+        List_left_fit.append(left_fit)
+        List_right_fit.append(right_fit)
+        List_left_fit.pop(0)        
+        List_right_fit.pop(0)           
+    avg_left_fit = np.mean((List_left_fit),axis=0) *0.5 + left_fit*0.5
+    avg_right_fit = np.mean((List_right_fit),axis=0) *0.5 + right_fit*0.5    
+```  
+If the around search area is incorrect, the number of detected pixels is less than 1500 and it is judged as an NG judgment, so that it switches to the slide window.
 ```python
-if ((len(line_obj.detected)==0) or (line_obj.detected.any()==False)):
-    ''' SEEKS THE LANE LINES FROM SCRATCH '''
+ minpix = 1500 
+    if len(leftx) < minpix or len(rightx) < minpix :
+        left_fit = avg_left_fit
+        right_fit = avg_right_fit
+        Easy_search = False
+```  
 
-else:
-    ''' SEEKS THE LANE LINES ONLY AROUND PREVIOUS ONE '''
+2. Add a system to switch the line search process to around search to improve processing speed and prevent erroneous line detection
+```python
+    #Switching for searchig code
+    if Easy_search is False: #Use Sliding_window_searching
+        left_fit, right_fit, leftx, lefty, rightx, righty, out_img = find_sliding_window(warped_binary)
+      ･･･
+    else: #Use previous polynomials area _searching
+        left_fit = List_left_fit[-1] 
+        right_fit = List_right_fit[-1] 
+        left_fit, right_fit, leftx, lefty, rightx, righty, colored_binary_img = search_around_poly(warped_binary,left_fit, right_fit)     
+```  
 
+3. Set the following criteria to detect the line correctly
+・ Change of lane width is within ± 20%
+・ Change amount of vehicle center position is 0.3m or less
+・ The amount of change in curvature of the curve is less than twice each of the left and right lines
+```python  
+#Use the previous line if the line width change rate is 0.8 times or more    
+if Lane_width < 0.8*pvs_avg_Lane_width or Lane_width is 0:
+       left_fit = avg_left_fit 
+       right_fit = avg_right_fit
+       
+#Use the previous line if the offset change rate is 0.3 times or more 
+if abs(offset - prv_offset) > 0.3: 
+            left_fit = List_left_fit[-1]
+            right_fit = List_right_fit[-1]
+            
+ #Use the previous line if the amount of change in curvature of the curve is
+ less than twice each of the left and right lines
+ differential_L = abs(L_curverad - prv_L_curverad)/abs(prv_L_curverad)
+ differential_R = abs(R_curverad - prv_R_curverad)/abs(prv_R_curverad)        
+ #Eliminate irregular curvatures by changing the curvature of the left and right curves
+ if abs(differential_L+differential_R)/(2*differential_R) >2.5 and differential_L > 1.5: 
+     left_fit = List_left_fit[-1]
+ if abs(differential_R+differential_L)/(2*differential_L) >2.5 and differential_R > 1.5:
+     right_fit = List_right_fit[-1]
 ```
-
----
 
 ### Discussion
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-This program assumes there are no any cars in front of the own vehicle. If there is a car (or a motorbike), some portion of lane line will be hidden and it may cause detection problems.
+1.This program assumes that there is no vehicle in front of the vehicle. Having a vehicle (or a bus, Truck, bike) can obscure part of the lane and cause problems with detection.
 
-<div style="text-align:center"><br/>
-<img src="./output_images/harder_challenge_video_output1.png"><br/>
-An one scene from `harder_challenge_video_output.mp4`<br/><br/>
-</div>
+One solution is to detect the vehicle (using computer vision, machine learning etc) and implement the function of subtracting the detected car position from the area for finding lane lines.
 
-One of the solutions of this would be implementing a function to detect the a car (using computer vision, machine learning, etc.) and subtract the position of the detected car from the interested area (masked area) for finding lane lines.
+2.Other problem will cause when the curvature of the lane lines is too sharp. The interested area (masked area) for seeking lane lines in this project is fixed, not dynamic.
 
-Other problem will cause when the curvature of the lane lines is too sharp. The interested area (masked area) for seeking lane lines in this project is fixed, not dynamic.
+To avoid this, either change the region of interest (mask region) according to the situation around the vehicle, or a human driver turns his head and looks at the direction of rotation, You can install the camera. (Everyone is just looking forward with a perfectly fixed head and can not turn sharp curves.)
 
-<div style="text-align:center"><br/>
-<img src="./output_images/harder_challenge_video_output2.png"><br/>
-Another scene from `harder_challenge_video_output.mp4`<br/><br/>
-</div>
-
-To avoid this, the interested area (masked area) should be changed corresponding the circumstance around the own vehicle, or we can install additional cameras on both left and right side of the car because human drivers usually turn their head and look the turning direction. (Nobody can turn sharp curves perfectly fixing their head and only looking forward.)
+By predicting the vanishing point with deep learning and combining the lane search program of this program, it is considered that measures against 1.2 above can be taken.
 
