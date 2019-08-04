@@ -1,8 +1,6 @@
 # Self-Driving Car Engineer Nanodegree
 
 ## Project : Advanced Lane Finding
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
-![Lanes Image](./examples/example_output.jpg)
 1. Flow of processing  
   1.1 Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.  
   1.2 Apply a distortion correction to raw images.  
@@ -50,7 +48,7 @@ An original (left) and undistorted (right) image<br/><br/>
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of X direction gradient and S color channel thresholds to generate a binary image using a function called `CombineBinary()` in the 5th code cell (In[5]:) of `P4.ipynb`. Here's an example of my output for this step:
+I used a combination of X direction gradient and S color channel thresholds to generate a binary image using a function called `CombineBinary()` . Here's an example of my output for this step:
 
 <div style="text-align:center"><br/>
 <img src="./output_images/combined_binary/combined_binary4.png"><br/>
@@ -59,25 +57,23 @@ An undistorted (left) and combined binary (right) image<br/><br/>
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-I used the `cv2.warpPerspective()` for perspective transform in the 6th code cell (In[6]:) of `P4.ipynb`. Assuming the vanishing point of the picture is at (1280x0.5, 720x0.575) and the start points of both lane lines when the vehicle is center between the lane lines are at (200, 700) and (1080, 700), the source points `src` are choosen from vertices of a trapezoid made by the value of `ratio`, which is 0.625 in this project.
-
+I used the `cv2.warpPerspective()` for perspective transform.
+This resulted in the following source and destination points:
+src
+([[150, 720],
+  [590, 450],
+  [700, 450],
+  [1250, 720]]) 
+ dst
+([[200 , 720],
+  [200  ,  0],
+  [980 ,   0], 
+  [980 , 720]])
+ 
 <div style="text-align:center"><br/>
 <img src="./output_images/warped/trapezoid.png"><br/>
 a trapezoid made by the value of `ratio`<br/><br/>
 </div>
-
-On the other hand, the destination points `dst` are hardcode.
-
-```python
-ratio = 0.625
-offset = (img.shape[1]/2-200) / (img.shape[0]*(1-0.575)) * (img.shape[0]*(ratio-0.575))
-
-src = np.float32([[img.shape[1]/2-offset,img.shape[0]*ratio], [img.shape[1]/2+offset,img.shape[0]*ratio],
-                  [200,img.shape[0]-20], [img.shape[1]-200,img.shape[0]-20]])
-dst = np.float32([[300,0], [img.shape[1]-300,0],
-                  [300,img.shape[0]], [img.shape[1]-300,img.shape[0]]])
-
-```
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
