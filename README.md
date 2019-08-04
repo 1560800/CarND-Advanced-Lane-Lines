@@ -12,6 +12,11 @@ The goals / steps of this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
+## First of All  
+Please refer to this file for the file described in this document  
+[(./Advanced_lane_finding_final.ipynb)](./Advanced_lane_finding_final.ipynb)  
+
+-------
 ### Camera Calibration
 
 #### 1. Briefly state how you computed the camera matrix and distortion coefficients. Provide an example of a distortion corrected calibration image.
