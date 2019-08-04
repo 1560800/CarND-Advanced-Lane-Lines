@@ -202,11 +202,11 @@ if abs(offset - prv_offset) > 0.3:
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-1.Lanes hidden by obstacles  　
+1.Lanes hidden by obstacles    　
 This program assumes that there is no vehicle in front of the vehicle. Having a vehicle (or a bus, Truck, bike) can obscure part of the lane and cause problems with detection.
 One solution is to detect the vehicle (using computer vision, machine learning etc) and implement the function of subtracting the detected car position from the area for finding lane lines.
 
-2.Loss of vanishing point    
+2.Loss of vanishing point   
 Other problem will cause when the curvature of the lane lines is too sharp. The interested area (masked area) for seeking lane lines in this project is fixed, not dynamic.
 
 To avoid this, either change the region of interest (mask region) according to the situation around the vehicle, or a human driver turns his head and looks at the direction of rotation, You can install the camera. (Everyone is just looking forward with a perfectly fixed head and can not turn sharp curves.)  
