@@ -1,21 +1,16 @@
 # Self-Driving Car Engineer Nanodegree
 
-## Project : Advanced Lane Finding
-1. Flow of processing  
-  1.1 Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.  
-  1.2 Apply a distortion correction to raw images.  
-  1.3 Use color transforms, gradients, etc., to create a thresholded binary image.  
-  1.4 Apply a perspective transform to rectify binary image ("birds-eye view").  
-  1.5 Detect lane pixels and fit to find the lane boundary.  
-  1.6 Determine the curvature of the lane and vehicle position with respect to center.  
-  1.7 Warp the detected lane boundaries back onto the original image.  
-  1.8 Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.  
+## Project : Advanced Lane Finding  
 
-2. Especially examined points  
-  2.1 Length weight addition  
-  2.2 Set slope criteria
-
-3. Conclusion
+The goals / steps of this project are the following:
+* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
+* Apply a distortion correction to raw images.
+* Use color transforms, gradients, etc., to create a thresholded binary image.
+* Apply a perspective transform to rectify binary image ("birds-eye view").
+* Detect lane pixels and fit to find the lane boundary.
+* Determine the curvature of the lane and vehicle position with respect to center.
+* Warp the detected lane boundaries back onto the original image.
+* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
 ### Camera Calibration
 
