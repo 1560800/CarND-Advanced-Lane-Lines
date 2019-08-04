@@ -98,10 +98,9 @@ As previously mentioned, the find_lanes_sliding_windows() function implements th
 
 Furthermore, in the aroundabout search, it is in the form of an area that spreads toward the front
 The reason is that the front lane moves a lot while the front lane has a small amount of movement.
-
 <div style="text-align:center"><br/>
 <img src="./output_images/around_search_improved.png"><br/>
-around_search_improved image<br/><br/>
+improved_around_search_area image<br/><br/>
 </div>
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
@@ -126,7 +125,7 @@ Also, I multiply the offset pixel between the center of both lane lines and the 
 Finally, fills the space between two fitted lines, and un-warps (warps back) the image using `M_inv`, a matrix just source points `src` and destination points `dst` are opposite from warping matrix `M`.
 
 <div style="text-align:center"><br/>
-<img src="./output_images/unwarped/unwarped4.png"><br/>
+<img src="./output_images/unwarped4.png"><br/>
 Original image (left) and warped (right) image<br/><br/>
 </div>
 
