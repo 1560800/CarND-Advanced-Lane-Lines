@@ -1,6 +1,8 @@
 # Self-Driving Car Engineer Nanodegree
 
 ## Project : Advanced Lane Finding  
+[![png](images/title.png)](https://youtu.be/HTPEWC-fjCQ)
+[Video Link](https://youtu.be/XIAQ2bwBH30)  
 
 The goals / steps of this project are the following:
 * Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
